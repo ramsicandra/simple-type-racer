@@ -1,0 +1,51 @@
+<style>
+    body { color: grey; font-family: 'Courier New'; font-size: 3em;}
+    pt { margin: 0 -.3em 0 -.3em; }
+    input { opacity: 0; }
+    c { color: black; }
+    w { color: red; }
+</style>
+<time></time> <score></score>
+<br />
+<viewport></viewport>
+<input autofocus></input>
+<script>
+var viewport = document.getElementsByTagName("viewport")[0];
+var input = document.getElementsByTagName("input")[0];
+var time = document.getElementsByTagName("time")[0];
+var score = document.getElementsByTagName("score")[0];
+var words = "a quick brown fox jumps over the lazy dog.";
+var start = "", interval;
+
+function sync() {
+    viewport.innerHTML = "";
+    for(i=0; i<words.length; i++) {
+        if (i == input.value.length) viewport.innerHTML += "<pt>|</pt>";
+        if (i >= input.value.length) {
+            viewport.innerHTML += words[i];
+        } else if (words[i] === input.value[i]) {
+            viewport.innerHTML += `<c>${words[i]}</c>`;
+        } else {
+            viewport.innerHTML += `<w>${words[i]}</w>`;
+        }
+    }
+    if (words.length == input.value.length) end();
+}
+
+function end() {
+    var right = document.getElementsByTagName("c").length;
+    var all = words.length;
+    var minute = (Date.now() - start) / 60000;
+    score.innerHTML = `${Math.round(right/all*100)}% ${Math.round(right/5 / minute)}WPM`;
+    start = "";
+    input.oninput = "";
+    clearInterval(interval);
+}
+
+input.oninput = sync; sync();
+window.onkeydown = () => {
+    window.onkeydown = "";
+    start = Date.now();
+    interval = setInterval(() => time.innerText = `${(Date.now() - start)/1000}s`);
+}
+</script>
